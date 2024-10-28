@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protocol test page</title>
+    <link rel="stylesheet" href="/normalize.css">
+    <link rel="icon" href="/assets/images/favicon.svg">
+</head>
+<body>
+    <h2>Hello, it's test page!</h2>
+    <p>Your protocol:  <span id="protocol-result"></span></p>
+    <script>
+        let protocolResult = document.querySelector('#protocol-result');
+        protocolResult.innerText = window.location.protocol;
+    </script>
+</body>
+</html>
