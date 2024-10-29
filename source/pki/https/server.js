@@ -1,8 +1,9 @@
-const express = require("express");
+const express = require('express');
 const path = require("path");
+const https = require('https');
+const fs = require('fs');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 app.use(express.static(path.join(__dirname, "../dist")));
 
@@ -10,6 +11,12 @@ app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "../dist", "index.html"));
 });
 
-app.listen(PORT, () => {
-  console.log(`Сервер запущен на http://localhost:${PORT}`);
+const options = {
+  pfx: fs.readFileSync(path.join(__dirname,'comp-secr-esse.pfx')),
+  passphrase: "EB6D471DBB32B9F9BB3D98E86421BDC76102EA47",
+};
+
+https.createServer(options, app).listen(443, () => {
+  console.log('HTTPS сервер запущен на порту 443');
 });
+
