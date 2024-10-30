@@ -1,12 +1,30 @@
 const express = require("express");
+const app = express();
 const path = require("path");
 const https = require("https");
 const fs = require("fs");
 const session = require("express-session");
+const RedisStore = require("connect-redis").default;
+const { createClient } = require("redis");
 
-const app = express();
+(async function () {
+  const client = createClient();
 
-app.use(express.static(path.join(__dirname, "../dist")));
+  client.on("error", (err) => console.log("Redis Client Error", err));
+
+  await client.connect();
+
+  app.use(
+    session({
+      store: new RedisStore({
+        client: client,
+      }),
+      secret: "your-secret-key",
+      resave: false,
+      saveUninitialized: false,
+    })
+  );
+})();
 
 app.use(
   session({
@@ -17,13 +35,13 @@ app.use(
   })
 );
 
-app.get("/testSession", (req, res)=>{
+app.get("/testSession", (req, res) => {
   if (req.session.views) {
     req.session.views++;
     res.send(`Вы посетили эту страницу ${req.session.views} раз`);
   } else {
     req.session.views = 1;
-    res.send('Добро пожаловать! Это ваш первый визит.');
+    res.send("Добро пожаловать! Это ваш первый визит.");
   }
 });
 
@@ -39,4 +57,3 @@ const options = {
 https.createServer(options, app).listen(443, () => {
   console.log("HTTPS сервер запущен на порту 443");
 });
-
